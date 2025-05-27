@@ -1,25 +1,23 @@
 const mongoose = require('mongoose');
 
-const taskSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true,
-    trim: true
+const taskSchema = mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+    },
+    completed: {
+      type: Boolean,
+      default: false,
+    },
   },
-  description: {
-    type: String,
-    trim: true,
-    default: ''
-  },
-  completed: {
-    type: Boolean,
-    default: false
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
+  {
+    timestamps: true, // automatically adds createdAt and updatedAt fields
   }
-});
+);
 
 const Task = mongoose.model('Task', taskSchema);
 
