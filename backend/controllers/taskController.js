@@ -62,4 +62,24 @@ const deleteTask = async (req, res) => {
   }
 };
 
-module.exports = { getTasks, createTask, updateTask, deleteTask };
+// Get a single task by ID
+const getTaskById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const task = await Task.findById(id);
+    if (!task) return res.status(404).json({ message: 'Task not found' });
+
+    res.json(task);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+module.exports = {
+  getTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+  getTaskById
+};
