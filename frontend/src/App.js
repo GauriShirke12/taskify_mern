@@ -4,23 +4,42 @@ import { fetchTasks, createTask } from './services/taskService';
 function App() {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState('');
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchTasks().then(data => setTasks(data));
+    const loadTasks = async () => {
+      try {
+        const data = await fetchTasks();
+        setTasks(data);
+      } catch (err) {
+        console.error("Error fetching tasks:", err);
+        setError("Failed to load tasks");
+      }
+    };
+
+    loadTasks();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim()) return;
 
-    const newTask = await createTask({ title });
-    setTasks([...tasks, newTask]);
-    setTitle('');
+    try {
+      const newTask = await createTask({ title });
+      setTasks([...tasks, newTask]);
+      setTitle('');
+    } catch (err) {
+      console.error("Error creating task:", err);
+      setError("Failed to create task");
+    }
   };
 
   return (
     <div style={{ padding: '2rem' }}>
       <h1>Taskify</h1>
+
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
       <form onSubmit={handleSubmit}>
         <input
           value={title}
