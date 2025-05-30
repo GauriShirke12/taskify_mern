@@ -5,13 +5,13 @@ import {
   updateTask,
   deleteTask,
 } from './services/taskService';
+import './App.css';
 
 function App() {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState('');
   const [error, setError] = useState(null);
 
-  // Load tasks on mount
   useEffect(() => {
     const loadTasks = async () => {
       try {
@@ -26,7 +26,6 @@ function App() {
     loadTasks();
   }, []);
 
-  // Add new task
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim()) return;
@@ -41,7 +40,6 @@ function App() {
     }
   };
 
-  // Toggle completion
   const toggleComplete = async (task) => {
     try {
       const updated = await updateTask(task._id, {
@@ -56,7 +54,6 @@ function App() {
     }
   };
 
-  // Delete task
   const handleDelete = async (id) => {
     try {
       await deleteTask(id);
@@ -68,10 +65,10 @@ function App() {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div className="container">
       <h1>Taskify</h1>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
 
       <form onSubmit={handleSubmit}>
         <input
@@ -82,24 +79,18 @@ function App() {
         <button type="submit">Add Task</button>
       </form>
 
-      <ul style={{ marginTop: '1rem' }}>
+      <ul>
         {tasks.map(task => (
-          <li key={task._id} style={{ marginBottom: '0.5rem' }}>
+          <li key={task._id}>
             <span
-              style={{
-                textDecoration: task.completed ? 'line-through' : 'none',
-                cursor: 'pointer',
-              }}
               onClick={() => toggleComplete(task)}
+              className={task.completed ? 'completed' : ''}
             >
-              {task.title} {task.completed ? '✅' : '❌'}
+              {task.title}
             </span>
-            <button
-              style={{ marginLeft: '1rem' }}
-              onClick={() => handleDelete(task._id)}
-            >
-              Delete
-            </button>
+            <div>
+              <button className="delete-btn" onClick={() => handleDelete(task._id)}>❌</button>
+            </div>
           </li>
         ))}
       </ul>
