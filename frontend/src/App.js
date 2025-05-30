@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { fetchTasks, createTask } from './services/taskService';
+import {
+  fetchTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+} from './services/taskService';
 
 function App() {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState('');
   const [error, setError] = useState(null);
 
+  // Load tasks on mount
   useEffect(() => {
     const loadTasks = async () => {
       try {
@@ -20,17 +26,44 @@ function App() {
     loadTasks();
   }, []);
 
+  // Add new task
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim()) return;
 
     try {
       const newTask = await createTask({ title });
-      setTasks([...tasks, newTask]);
+      setTasks(prev => [...prev, newTask]);
       setTitle('');
     } catch (err) {
       console.error("Error creating task:", err);
       setError("Failed to create task");
+    }
+  };
+
+  // Toggle completion
+  const toggleComplete = async (task) => {
+    try {
+      const updated = await updateTask(task._id, {
+        completed: !task.completed,
+      });
+      setTasks(prev =>
+        prev.map(t => (t._id === task._id ? updated : t))
+      );
+    } catch (err) {
+      console.error("Error updating task:", err);
+      setError("Failed to update task");
+    }
+  };
+
+  // Delete task
+  const handleDelete = async (id) => {
+    try {
+      await deleteTask(id);
+      setTasks(prev => prev.filter(t => t._id !== id));
+    } catch (err) {
+      console.error("Error deleting task:", err);
+      setError("Failed to delete task");
     }
   };
 
@@ -49,10 +82,24 @@ function App() {
         <button type="submit">Add Task</button>
       </form>
 
-      <ul>
+      <ul style={{ marginTop: '1rem' }}>
         {tasks.map(task => (
-          <li key={task._id}>
-            {task.title} {task.completed ? '✅' : '❌'}
+          <li key={task._id} style={{ marginBottom: '0.5rem' }}>
+            <span
+              style={{
+                textDecoration: task.completed ? 'line-through' : 'none',
+                cursor: 'pointer',
+              }}
+              onClick={() => toggleComplete(task)}
+            >
+              {task.title} {task.completed ? '✅' : '❌'}
+            </span>
+            <button
+              style={{ marginLeft: '1rem' }}
+              onClick={() => handleDelete(task._id)}
+            >
+              Delete
+            </button>
           </li>
         ))}
       </ul>
