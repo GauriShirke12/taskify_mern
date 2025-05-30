@@ -1,13 +1,16 @@
 const mongoose = require('mongoose');
 
-const taskSchema = mongoose.Schema(
+const taskSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true,
+      required: [true, 'Title is required'],
+      trim: true,
     },
     description: {
       type: String,
+      default: '',
+      trim: true,
     },
     completed: {
       type: Boolean,
@@ -15,7 +18,7 @@ const taskSchema = mongoose.Schema(
     },
   },
   {
-    timestamps: true, // automatically adds createdAt and updatedAt fields
+    timestamps: true, // createdAt and updatedAt
   }
 );
 
