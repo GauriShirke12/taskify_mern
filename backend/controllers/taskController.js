@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Task = require('../models/taskModel');
 
 // Get all tasks
@@ -6,7 +7,10 @@ const getTasks = async (req, res) => {
     const tasks = await Task.find();
     res.json(tasks);
   } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
+    res.status(500).json({
+      message: 'Server Error',
+      error: process.env.NODE_ENV === 'production' ? undefined : error.message
+    });
   }
 };
 
@@ -23,7 +27,10 @@ const createTask = async (req, res) => {
     const savedTask = await newTask.save();
     res.status(201).json(savedTask);
   } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
+    res.status(500).json({
+      message: 'Server Error',
+      error: process.env.NODE_ENV === 'production' ? undefined : error.message
+    });
   }
 };
 
@@ -31,6 +38,10 @@ const createTask = async (req, res) => {
 const updateTask = async (req, res) => {
   const { id } = req.params;
   const { title, description, completed } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid Task ID' });
+  }
 
   try {
     const task = await Task.findById(id);
@@ -43,7 +54,10 @@ const updateTask = async (req, res) => {
     const updatedTask = await task.save();
     res.json(updatedTask);
   } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
+    res.status(500).json({
+      message: 'Server Error',
+      error: process.env.NODE_ENV === 'production' ? undefined : error.message
+    });
   }
 };
 
@@ -51,14 +65,21 @@ const updateTask = async (req, res) => {
 const deleteTask = async (req, res) => {
   const { id } = req.params;
 
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid Task ID' });
+  }
+
   try {
     const task = await Task.findById(id);
     if (!task) return res.status(404).json({ message: 'Task not found' });
 
-    await task.remove();
+    await task.deleteOne(); // modern and preferred over .remove()
     res.json({ message: 'Task removed' });
   } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
+    res.status(500).json({
+      message: 'Server Error',
+      error: process.env.NODE_ENV === 'production' ? undefined : error.message
+    });
   }
 };
 
@@ -66,13 +87,20 @@ const deleteTask = async (req, res) => {
 const getTaskById = async (req, res) => {
   const { id } = req.params;
 
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid Task ID' });
+  }
+
   try {
     const task = await Task.findById(id);
     if (!task) return res.status(404).json({ message: 'Task not found' });
 
     res.json(task);
   } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
+    res.status(500).json({
+      message: 'Server Error',
+      error: process.env.NODE_ENV === 'production' ? undefined : error.message
+    });
   }
 };
 

@@ -1,15 +1,17 @@
-const API_URL = 'http://localhost:5000/api/tasks';
+const BASE_URL = "/api/tasks";
 
-export const fetchTasks = async () => {
-  const response = await fetch(API_URL);
-  return response.json();
-};
+export async function fetchTasks() {
+  const res = await fetch(BASE_URL);
+  if (!res.ok) throw new Error("Failed to fetch tasks");
+  return await res.json();
+}
 
-export const createTask = async (task) => {
-  const response = await fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(task),
+export async function createTask(task) {
+  const res = await fetch(BASE_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(task)
   });
-  return response.json();
-};
+  if (!res.ok) throw new Error("Failed to create task");
+  return await res.json();
+}
