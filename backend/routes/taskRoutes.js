@@ -6,13 +6,22 @@ const {
   createTask,
   updateTask,
   deleteTask,
-  getTaskById  // <-- include the new controller here
+  getTaskById
 } = require('../controllers/taskController');
 
+// GET all tasks
 router.get('/', getTasks);
-router.get('/:id', getTaskById);  // <-- add single task GET route
+
+// GET single task by ID
+router.get('/:id', getTaskById);
+
+// POST new task
 router.post('/', createTask);
+
+// PUT update task
 router.put('/:id', updateTask);
+
+// DELETE task
 router.delete('/:id', deleteTask);
 
 module.exports = router;
