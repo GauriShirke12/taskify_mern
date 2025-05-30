@@ -35,23 +35,25 @@ const createTask = async (req, res) => {
 };
 
 // Update a task by ID
+// Update a task by ID
 const updateTask = async (req, res) => {
   const { id } = req.params;
-  const { title, description, completed } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: 'Invalid Task ID' });
   }
 
   try {
-    const task = await Task.findById(id);
-    if (!task) return res.status(404).json({ message: 'Task not found' });
+    const updatedTask = await Task.findByIdAndUpdate(
+      id,
+      { $set: req.body },
+      { new: true, runValidators: true }
+    );
 
-    task.title = title !== undefined ? title : task.title;
-    task.description = description !== undefined ? description : task.description;
-    task.completed = completed !== undefined ? completed : task.completed;
+    if (!updatedTask) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
 
-    const updatedTask = await task.save();
     res.json(updatedTask);
   } catch (error) {
     res.status(500).json({
@@ -60,6 +62,7 @@ const updateTask = async (req, res) => {
     });
   }
 };
+
 
 // Delete a task by ID
 const deleteTask = async (req, res) => {
