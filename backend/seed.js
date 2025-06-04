@@ -3,7 +3,7 @@ const Task = require('./models/taskModel');
 
 const tasks = [
   { title: "Sample Task 1", description: "Sample description 1", completed: false },
-  { title: "Sample Task 2", description: "Sample description 2", completed: true }
+  { title: "Sample Task 11", description: "Sample description 11", completed: true }
 ];
 
 mongoose.connect('mongodb://localhost:27017/yourdbname')  // replace with your DB URL
